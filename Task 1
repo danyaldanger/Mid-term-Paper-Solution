@@ -1,0 +1,182 @@
+#include <iostream>
+using namespace std;
+
+class Node
+{
+public:
+    int patientID;
+    Node *next;
+    Node *prev;
+    Node(int id)
+    {
+        patientID = id;
+        next = NULL;
+        prev = NULL;
+    }
+};
+
+class ERQueue
+{
+private:
+    Node *head;
+    Node *tail;
+    int length;
+
+public:
+    ERQueue()
+    {
+        head = NULL;
+        tail = NULL;
+        length = 0;
+    }
+
+    void insertAtBeginning(int patientID)
+    {
+        Node *newPatient = new Node(patientID);
+        if (head == NULL)
+        {
+            head = newPatient;
+            tail = newPatient;
+        }
+        else
+        {
+            newPatient->next = head;
+            head->prev = newPatient;
+            head = newPatient;
+        }
+        cout << "Patient with " << patientID << "Inserted at the beginning Successfully\n";
+        length++;
+    }
+
+    void insertAtEnd(int patientID)
+    {
+        Node *newPatient = new Node(patientID);
+        if (head == NULL)
+        {
+            head = newPatient;
+            tail = newPatient;
+        }
+        else
+        {
+            tail->next = newPatient;
+            newPatient->prev = tail;
+            tail = newPatient;
+        }
+        cout << "Patient with " << newPatient->patientID << " Inserted at the end Successfully\n";
+        length++;
+    }
+
+    void insertAtPosition(int patientID, int position)
+    {
+        if (position < 1 || position > length + 1)
+        {
+            cout << "Invalid Position" << endl;
+            return;
+        }
+
+        if (position == 1)
+        {
+            insertAtBeginning(patientID);
+            return;
+        }
+
+        if (position == length + 1)
+        {
+            insertAtEnd(patientID);
+            return;
+        }
+
+        Node *newPatient = new Node(patientID);
+        Node *curr = head;
+        for (int i = 1; i < position - 1; i++)
+        {
+            curr = curr->next;
+        }
+        newPatient->next = curr->next;
+        newPatient->prev = curr;
+        if (curr->next != NULL)
+        {
+            curr->next->prev = newPatient;
+        }
+        curr->next = newPatient;
+        cout << "Patient with " << newPatient->patientID << " Inserted Successfully\n";
+        length++;
+    }
+
+    void deleteFromBeginning()
+    {
+        if (head == NULL)
+        {
+            cout << "Queue is Empty" << endl;
+            return;
+        }
+
+        Node *temp = head;
+        cout << "Patient with " << head->patientID << " deleted Successfully\n";
+        head = head->next;
+        if (head != NULL)
+        {
+            head->prev = NULL;
+        }
+        else
+        {
+            tail = NULL;
+        }
+        delete temp;
+        length--;
+    }
+
+    void displayForward()
+    {
+        Node *curr = head;
+        while (curr != NULL)
+        {
+            cout << curr->patientID << " ";
+            curr = curr->next;
+        }
+        cout << endl;
+    }
+
+    void displayBackward()
+    {
+        Node *curr = tail;
+        while (curr != NULL)
+        {
+            cout << curr->patientID << " ";
+            curr = curr->prev;
+        }
+        cout << endl;
+    }
+
+    int getHead()
+    {
+        if (head != NULL)
+            return head->patientID;
+        return -1;
+    }
+
+    int getTail()
+    {
+        if (tail != NULL)
+            return tail->patientID;
+        return -1;
+    }
+};
+
+int main()
+{
+    ERQueue hospital;
+    hospital.insertAtEnd(101);
+    hospital.insertAtEnd(102);
+    hospital.insertAtBeginning(200);
+    hospital.insertAtPosition(150, 2);
+    hospital.deleteFromBeginning();
+    hospital.insertAtEnd(300);
+    cout << "Head: " << hospital.getHead() << endl;
+    cout << "Tail: " << hospital.getTail() << endl;
+    cout << "Forward: ";
+    hospital.displayForward();
+    cout << "Backward: ";
+    hospital.displayBackward();
+    return 0;
+}
